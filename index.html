@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="map"></div>
 
     <div class="main-title" id="mainTitle">
@@ -16,22 +15,17 @@
         <p>Нажмите на кнопку, чтобы увидеть прогноз.</p>
     </div>
 
-    <!-- Кнопка для запуска симуляции -->
-    <button id="simulateBtn">▶︎ Начать симуляцию</button>
+    <!-- Область управления вынесена из потока для гибкости -->
+    <div class="action-area">
+        <button id="simulateBtn" disabled>Загрузка данных о ветре...</button>
+    </div>
 
-    <!-- Кнопка-гамбургер для вызова инфо-панели (видна только на мобильных) -->
     <button id="panelToggleBtn">☰</button>
 
-    <!-- Информационная панель (на десктопе справа, на мобильных скрыта) -->
     <div class="info-panel" id="infoPanel">
-        <div class="panel-header">
-            <h2>Информация</h2>
-            <span class="close-panel-btn" id="closePanelBtn">&times;</span>
-        </div>
-        
+        <div class="panel-header"><h2>Информация</h2></div>
         <div class="panel-content">
-            <div id="windInfo">Загрузка данных о ветре...</div>
-            
+            <div id="windInfo"></div>
             <div id="cityTimers" style="display: none;">
                 <h3>Результаты симуляции:</h3>
                 <p>Вильнюс: <span id="timer-вильнюс">-</span></p>
@@ -48,12 +42,11 @@
                 <p>Москва: <span id="timer-москва">-</span></p>
                 <p>Витебск: <span id="timer-витебск">-</span></p>
             </div>
-    
             <div class="actions-panel">
                 <h3>Что сейчас делать?</h3>
                 <ul>
                     <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия в случае радиационной аварии</a></li>
-                    <li><a href="https://habr.com/ru/articles/454766/ target="_blank" rel="noopener noreferrer">Почему важна йодная профилактика</a></li>
+                    <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">Почему важна йодная профилактика</a></li>
                 </ul>
                 <h3 class="subheader">Для любознательных:</h3>
                 <ul>
@@ -67,13 +60,13 @@
     <div id="iodine-tooltip" class="info-popup" style="display: none;">
         <span class="close-btn" id="closePopupBtn">&times;</span>
         <h4>Эффективность йода</h4>
-        <p>Показывает, насколько успешной будет защита щитовидной железы при приеме йодида калия в момент прихода облака. Чем больше времени прошло с момента выброса, тем ниже эффективность.</p>
+        <p>Показывает, насколько успешной будет защита щитовидной железы при приеме йодида калия. Чем больше времени прошло с момента выброса, тем ниже эффективность.</p>
     </div>
     
     <footer>
         <p><strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не точным прогнозом. Он создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение радиационного выброса. Все расчеты являются приблизительными.</p>
     </footer>
-
+    
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
