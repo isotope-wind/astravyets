@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Куда подует ветер от БелАЭС? | Симулятор рисков</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -10,65 +10,70 @@
 </head>
 <body>
 
-    <!-- заголовок поверх карты -->
-    <div class="main-title" id="mainTitle">
-        <h1>Куда подует ветер от БелАЭС?</h1>
-        <p>Нажмите на кнопку, чтобы увидеть, какие города окажутся под угрозой при текущей погоде.</p>
-    </div>
-
     <div id="map"></div>
 
-    <!-- БОКОВАЯ ПАНЕЛЬ -->
-    <div class="ui-panel">
-        <h2>Параметры</h2>
-        <div id="windInfo">Загрузка данных о ветре...</div>
-        <!-- кнопка с новым текстом>
-        <button id="simulateBtn">▶︎ Начать симуляцию</button>
-        
-        <div id="cityTimers">
-            <h3>Время прихода облака радиации:</h3>
-	    <p>Вильнюс: <span id="timer-вильнюс">-</span></p>
-            <p>Минск: <span id="timer-минск">-</span></p>
-            <p>Варшава: <span id="timer-варшава">-</span></p>
-            <p>Рига: <span id="timer-рига">-</span></p>
-            <p>Каунас: <span id="timer-каунас">-</span></p>
-            <p>Даугавпилс: <span id="timer-даугавпилс">-</span></p>
-            <p>Киев: <span id="timer-киев">-</span></p>
-            <p>Новогрудок: <span id="timer-новогрудок">-</span></p>
-            <p>Жодино: <span id="timer-жодино">-</span></p>
-            <p>Гродно: <span id="timer-гродно">-</span></p>
-            <p>Брест: <span id="timer-брест">-</span></p>
-            <p>Москва: <span id="timer-москва">-</span></p>
-            <p>Витебск: <span id="timer-витебск">-</span></p>
-            <!-- и для других городов... -->
+    <div class="main-title" id="mainTitle">
+        <h1>Куда подует ветер от БелАЭС?</h1>
+        <p>Нажмите на кнопку, чтобы увидеть прогноз.</p>
+    </div>
+
+    <!-- Основная кнопка, которая видна до начала симуляции -->
+    <button id="simulateBtn">▶︎ Начать симуляцию</button>
+
+    <!-- Кнопка-гамбургер для вызова инфо-панели -->
+    <button id="panelToggleBtn">☰</button>
+
+    <!-- ИНФОРМАЦИОННАЯ ПАНЕЛЬ -->
+    <div class="info-panel" id="infoPanel">
+        <!-- Заголовок, который виден только на мобильных -->
+        <div class="panel-header">
+            <h2>Информация</h2>
+            <span class="close-panel-btn" id="closePanelBtn">&times;</span>
         </div>
-        <!-- новый блок действий
-        <div class="actions-panel">
-            <h3>Что делать сейчас?</h3>
-            <ul>
-                <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия в случае радиационной аварии</a></li>
-                <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">Важность йодной профилактики</a></li>
-            </ul>
+        
+        <div class="panel-content">
+            <div id="windInfo">Загрузка данных о ветре...</div>
             
-            <h3 class="subheader">Для любознательных:</h3>
-            <ul>
-                <li><a href="https://t.me/lab66/997 target="_blank" rel="noopener noreferrer">Радиозащитный йод в аптеках</a></li>
-                <li><a href="https://www.patreon.com/posts/50726105" target="_blank" rel="noopener noreferrer">Ветер и радиоактивные аэрозоли</a></li>
-            </ul>
+            <div id="cityTimers" style="display: none;">
+                <h3>Результаты симуляции:</h3>
+                <p>Вильнюс: <span id="timer-вильнюс">-</span></p>
+                <p>Минск: <span id="timer-минск">-</span></p>
+                <p>Варшава: <span id="timer-варшава">-</span></p>
+                <p>Рига: <span id="timer-рига">-</span></p>
+                <p>Каунас: <span id="timer-каунас">-</span></p>
+                <p>Даугавпилс: <span id="timer-даугавпилс">-</span></p>
+                <p>Киев: <span id="timer-киев">-</span></p>
+                <p>Новогрудок: <span id="timer-новогрудок">-</span></p>
+                <p>Жодино: <span id="timer-жодино">-</span></p>
+                <p>Гродно: <span id="timer-гродно">-</span></p>
+                <p>Брест: <span id="timer-брест">-</span></p>
+                <p>Москва: <span id="timer-москва">-</span></p>
+                <p>Витебск: <span id="timer-витебск">-</span></p>
+            </div>
+    
+            <div class="actions-panel">
+                <h3>Что сейчас делать?</h3>
+                <ul>
+                    <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия в случае радиационной аварии</a></li>
+                    <li><a href="https://habr.com/ru/articles/454766/ target="_blank" rel="noopener noreferrer">Почему важна йодная профилактика</a></li>
+                </ul>
+                <h3 class="subheader">Для любознательных:</h3>
+                <ul>
+                    <li><a href="https://t.me/lab66/997" target="_blank" rel="noopener noreferrer">Спасительный йод из аптек</a></li>
+                    <li><a href="https://www.patreon.com/posts/50726105" target="_blank" rel="noopener noreferrer">Ветер и радиоактивные аэрозоли</a></li>
+                </ul>
+            </div>
         </div>
     </div> 
     
-    <!-- подсказка для йодной профилактики (изначально скрыта) -->
     <div id="iodine-tooltip" class="info-popup" style="display: none;">
-        <span class="close-btn" id="close-popup-btn">&times;</span>
+        <span class="close-btn" id="closePopupBtn">&times;</span>
         <h4>Эффективность йода</h4>
         <p>Показывает, насколько успешной будет защита щитовидной железы при приеме йодида калия в момент прихода облака. Чем больше времени прошло с момента выброса, тем ниже эффективность.</p>
     </div>
     
     <footer>
-        <p>
-            <strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не точным прогнозом. Он создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение радиационного выброса. Все расчеты являются приблизительными.
-        </p>
+        <p><strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не точным прогнозом. Он создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение радиационного выброса. Все расчеты являются приблизительными.</p>
     </footer>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
