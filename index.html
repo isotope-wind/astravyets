@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Куда подует ветер от БелАЭС? | Монитор рисков</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
@@ -18,36 +18,37 @@
     <div class="action-area">
         <button id="simulateBtn" disabled>Загрузка...</button>
         <footer>
-            <p><strong>Внимание!</strong> Этот проект является упрощенной симуляцией. Создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о рисках.</p>
+            <p><strong>Внимание!</strong> Этот проект является упрощенной симуляцией. Создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a>.</p>
         </footer>
     </div>
+    
+    <button id="panelToggleBtn" aria-label="Открыть панель информации">☰</button>
 
-    <button id="panelToggleBtn">☰</button>
-
+    <div class="info-panel-overlay" id="infoPanelOverlay"></div>
     <div class="info-panel" id="infoPanel">
-        <div class="panel-header"><h2>Информация</h2></div>
+        <div class="panel-header" id="panelHeader"><h2>Информация</h2></div>
         <div class="panel-content">
-
             <div class="wind-rose-widget">
-                <img src="https://i.ibb.co/6PpcS6n/wind-rose-base.png" alt="Основа розы ветров" class="wind-rose-base">
-                <img src="https://i.ibb.co/SVSM2rN/wind-rose-pointer.png" alt="Стрелка ветра" id="wind-pointer" class="wind-rose-pointer">
+                <img src="wind-rose-base.svg" alt="Основа розы ветров" class="wind-rose-base">
+                <img src="wind-rose-pointer.svg" alt="Стрелка ветра" id="wind-pointer" class="wind-rose-pointer">
                 <div id="wind-speed" class="wind-speed-display">--</div>
                 <small class="timestamp" id="update-time"></small>
             </div>
-            
             <div id="cityTimers" style="display: none;">
                 <h3>Результаты симуляции:</h3>
-                <p>Вильнюс: <span id="timer-вильнюс">-</span></p><p>Минск: <span id="timer-минск">-</span></p><p>Варшава: <span id="timer-варшава">-</span></p><p>Рига: <span id="timer-рига">-</span></p><p>Каунас: <span id="timer-каунас">-</span></p><p>Даугавпилс: <span id="timer-даугавпилс">-</span></p><p>Киев: <span id="timer-киев">-</span></p><p>Новогрудок: <span id="timer-новогрудок">-</span></p><p>Жодино: <span id="timer-жодино">-</span></p><p>Гродно: <span id="timer-гродно">-</span></p><p>Брест: <span id="timer-брест">-</span></p><p>Москва: <span id="timer-москва">-</span></p><p>Витебск: <span id="timer-витебск">-</span></p>
+                <div class="timers-grid">
+                    <!-- Заполняется динамически из JS -->
+                </div>
             </div>
             <div class="links-panel">
                 <h3>Что сейчас делать?</h3>
                 <ul>
-                    <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия в случае радиационной аварии</a></li>
-                    <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">Почему важна йодная профилактика</a></li>
+                    <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия при радиационной аварии</a></li>
+                    <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">О йодной профилактике</a></li>
                 </ul>
                 <h3 class="subheader">Для любознательных:</h3>
                 <ul>
-                    <li><a href="https://t.me/lab66/997" target="_blank" rel="noopener noreferrer">Спасительный йод из аптек</a></li>
+                    <li><a href="https://t.me/lab66/997" target="_blank" rel="noopener noreferrer">Йод из аптек: что и как</a></li>
                     <li><a href="https://www.patreon.com/posts/50726105" target="_blank" rel="noopener noreferrer">Ветер и радиоактивные аэрозоли</a></li>
                 </ul>
             </div>
@@ -55,9 +56,9 @@
     </div> 
     
     <div id="iodine-tooltip" class="info-popup" style="display: none;">
-        <span class="close-btn" id="close-popup-btn">&times;</span>
+        <span class="close-btn" id="closePopupBtn">&times;</span>
         <h4>Эффективность йода</h4>
-        <p>Показывает, насколько успешной будет защита щитовидной железы при приеме йодида калия. Чем больше времени прошло с момента выброса, тем ниже эффективность.</p>
+        <p>Чем больше времени прошло с момента выброса, тем ниже эффективность защиты щитовидной железы йодидом калия.</p>
     </div>
     
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
