@@ -1,25 +1,33 @@
-<!doctype html>
-<html lang="RU">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Куда подует ветер? | Мониторинг БелАЭС</title>
-    <!-- Подключаем стили Leaflet и пользовательские стили -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Куда подует ветер от БелАЭС? | Симулятор рисков</title>
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- заголовок поверх карты -->
+    <div class="main-title" id="mainTitle">
+        <h1>Куда подует ветер от БелАЭС?</h1>
+        <p>Нажмите на кнопку, чтобы увидеть, какие города окажутся под угрозой при текущей погоде.</p>
+    </div>
+
     <div id="map"></div>
 
+    <!-- БОКОВАЯ ПАНЕЛЬ -->
     <div class="ui-panel">
-        <h2>Realtime моделирование</h2>
+        <h2>Параметры</h2>
         <div id="windInfo">Загрузка данных о ветре...</div>
-        <button id="simulateBtn">Симулировать выброс</button>
+        <!-- кнопка с новым текстом>
+        <button id="simulateBtn">▶︎ Начать симуляцию</button>
         
         <div id="cityTimers">
-            <h3>Время достижения (прибл.):</h3>
-            <p>Вильнюс: <span id="timer-вильнюс">-</span></p>
+            <h3>Время прихода облака радиации:</h3>
+			<p>Вильнюс: <span id="timer-вильнюс">-</span></p>
             <p>Минск: <span id="timer-минск">-</span></p>
             <p>Варшава: <span id="timer-варшава">-</span></p>
             <p>Рига: <span id="timer-рига">-</span></p>
@@ -32,25 +40,38 @@
             <p>Брест: <span id="timer-брест">-</span></p>
             <p>Москва: <span id="timer-москва">-</span></p>
             <p>Витебск: <span id="timer-витебск">-</span></p>
+            <!-- и для других городов... -->
         </div>
-
-        <div class="useful-links">
-            <h3>Полезные материалы:</h3>
+        <!-- новый блок действий
+        <div class="actions-panel">
+            <h3>Что делать сейчас?</h3>
             <ul>
+                <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия в случае радиационной аварии</a></li>
+                <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">Важность йодной профилактики</a></li>
+            </ul>
+            
+            <h3 class="subheader">Для любознательных:</h3>
+            <ul>
+                <li><a href="https://t.me/lab66/997 target="_blank" rel="noopener noreferrer">Радиозащитный йод в аптеках</a></li>
                 <li><a href="https://www.patreon.com/posts/50726105" target="_blank" rel="noopener noreferrer">Ветер и радиоактивные аэрозоли</a></li>
-                <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">Время и эффективность йодной профилактики</a></li>
             </ul>
         </div>
     </div> 
     
+    <!-- подсказка для йодной профилактики (изначально скрыта) -->
+    <div id="iodine-tooltip" class="info-popup" style="display: none;">
+        <span class="close-btn" id="close-popup-btn">&times;</span>
+        <h4>Эффективность йода</h4>
+        <p>Показывает, насколько успешной будет защита щитовидной железы при приеме йодида калия в момент прихода облака. Чем больше времени прошло с момента выброса, тем ниже эффективность.</p>
+    </div>
+    
     <footer>
         <p>
-            <strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не научно-точным прогнозом. Он создан радиационным химиком <a href="URL_АВТОРА" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="URL_LAB-66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение радиационного выброса. Все расчеты являются приблизительными.
+            <strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не точным прогнозом. Он создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение радиационного выброса. Все расчеты являются приблизительными.
         </p>
     </footer>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
-
 </body>
 </html>
