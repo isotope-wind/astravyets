@@ -4,28 +4,32 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    height: 100vh;
-    overflow: hidden;
+    height: 100vh; overflow: hidden;
 }
 
 #map { height: 100%; width: 100%; z-index: 1; }
+
+.main-title {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 900;
+    color: white; background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px 40px; text-align: center;
+    border-radius: 10px; text-shadow: 1px 1px 3px black;
+    transition: opacity 0.5s ease-out;
+}
+.main-title h1 { font-size: 2.5em; margin-bottom: 10px; }
+.main-title p { font-size: 1.2em; max-width: 600px; }
+
 .npp-icon { font-size: 24px; text-shadow: 0 0 5px white; }
 
 .ui-panel {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 300px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
+    position: absolute; top: 20px; right: 20px;
+    width: 320px; background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 20px; z-index: 1000; display: flex;
+    flex-direction: column; gap: 15px;
+    max-height: calc(100vh - 40px); overflow-y: auto;
 }
 
 .ui-panel h2 { font-size: 1.5em; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
@@ -34,33 +38,45 @@ body {
 .arrow { display: inline-block; font-size: 24px; color: #007bff; margin-left: 10px; transition: transform 0.5s ease-out; }
 
 #simulateBtn {
-    background-color: #c82333; color: white; font-size: 1.1em; font-weight: bold;
-    border: none; padding: 12px 15px; border-radius: 5px; cursor: pointer;
-    transition: background-color 0.2s ease;
+    background-color: #007bff; color: white; font-size: 1.2em;
+    font-weight: bold; border: none; padding: 12px 15px;
+    border-radius: 5px; cursor: pointer; transition: all 0.2s ease;
 }
-#simulateBtn:hover { background-color: #a51c2a; }
+#simulateBtn:hover { background-color: #0056b3; transform: scale(1.02); }
+#simulateBtn.active { background-color: #c82333; } /* Красный во время симуляции */
 
-#cityTimers p { margin: 5px 0; }
-#cityTimers span { font-weight: bold; color: #333; }
+#cityTimers { display: none; } /* Скрыт до начала симуляции */
+#cityTimers p { margin: 5px 0; } #cityTimers span { font-weight: bold; }
 
-.useful-links ul { list-style-type: none; }
-.useful-links li a { color: #0056b3; text-decoration: none; display: block; padding: 3px 0; }
-.useful-links li a:hover { text-decoration: underline; }
+.actions-panel h3 { margin-top: 10px; }
+.actions-panel .subheader { font-size: 1em; color: #555; }
+.actions-panel ul { list-style-type: none; margin-bottom: 10px; }
+.actions-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px 0; border-bottom: 1px solid #eee; }
+.actions-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
+
+.info-popup {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px; padding: 25px;
+    background: white; border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 2000;
+}
+.info-popup h4 { font-size: 1.3em; margin-bottom: 10px; }
+.close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #999; }
 
 footer {
     position: absolute; bottom: 0; left: 0; width: 100%;
-    background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0;
-    padding: 10px 20px; text-align: center; z-index: 1000;
-    font-size: 0.8em; line-height: 1.4;
+    background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0; padding: 10px 20px;
+    text-align: center; z-index: 1000; font-size: 0.8em; line-height: 1.4;
 }
 footer p { max-width: 800px; margin: 0 auto; }
 footer strong { color: #ffc107; }
-footer a { color: #82c0ff; text-decoration: underline; }
-footer a:hover { text-decoration: none; }
 
-.leaflet-tooltip-permanent {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid #c82333 !important;
-    border-radius: 4px; color: #333 !important; font-weight: bold;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.4); padding: 6px 10px !important;
+.leaflet-tooltip-permanent { /* Стили остались без изменений */ }
+
+/* МОБИЛЬНАЯ АДАПТАЦИЯ */
+@media (max-width: 768px) {
+    .main-title h1 { font-size: 1.8em; }
+    .main-title p { font-size: 1em; }
+    .ui-panel { width: 90%; top: 10px; right: 5%; }
 }
