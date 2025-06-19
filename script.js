@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             map = L.map('map', {zoomControl: false}).setView(NPP_COORDS, isMobile ? 5 : 6);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' }).addTo(map);
-            L.marker(NPP_COORDS, { icon: L.divIcon({ className: 'npp-icon', html: '☢️' }) }).addTo(map).bindPopup("БелАЭС");
+            L.marker(NPP_COORDS, { icon: L.divIcon({ className: 'npp-icon', html: '☢️' }) }).addTo(map).bindPopup("Белорусская АЭС");
             for (const cityName in CITIES) {
                 const marker = L.marker(CITIES[cityName]).addTo(map).bindPopup(cityName);
                 marker.bindTooltip(cityName, { permanent: false, direction: 'top' });
@@ -32,7 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error("Не удалось инициализировать карту:", error); }
     }
 
-    async function fetchWindData() { /* без изменений */ }
+    async function fetchWindData() {
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${NPP_COORDS[0]}&lon=${NPP_COORDS[1]}&appid=${API_KEY}&units=metric&lang=ru`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Ошибка API: ${response.statusText}`);
+            const data = await response.json();
+            windData = {speed: data.wind.speed || 0, deg: data.wind.deg || 0};
+            updateWindInfo();
+        } catch(error) {
+            console.error("Ошибка при получении данных о погоде:", error);
+            windInfoPanel.innerHTML = "<strong>Не удалось получить данные о погоде.</strong>";
+        }
+    }
 
     function setupEventListeners() {
         simulateBtn.addEventListener('click', startSimulation);
@@ -87,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-
+    
     function resetTimers() {
         for (const cityName in CITIES) {
             updateCityTimer(cityName, '-');
@@ -96,15 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         arrivedCities = {};
     }
-
-    function getIodineEffectiveness(hours) { /* без изменений */ }
-    function createPlumePolygon(radius) { /* без изменений */ }
-    function getDestinationPoint(startPoint, bearing, distance) { /* без изменений */ }
-    function isMarkerInsidePolygon(markerLatLng, polygonLayer) { /* без изменений */ }
-    function updateCityTimer(city, text) { /* без изменений */ }
-    function updateWindInfo() { /* без изменений */ }
-
+    
+    function updateWindInfo(){if(typeof windData.speed==="undefined")return;const e=windData.deg?`${windData.deg}°`:"Н/Д";windInfoPanel.innerHTML=`Ветер: <strong>${windData.speed.toFixed(1)} м/с</strong>, направление: <strong>${e}</strong><i class="arrow" style="transform: rotate(${windData.deg||0}deg);">↑</i>`}
+    function updateCityTimer(e,t){const n=document.getElementById(`timer-${e.toLowerCase().replace(/ /g,"-")}`);n&&(n.innerText=t)}
+    function getIodineEffectiveness(e){return e<=.5?"90-100%":e<=1?"~75%":e<=2?"~66%":e<=5?"50%":e<=8?"очень низкая":"нецелесообразна"}
+    function createPlumePolygon(e){const t=L.latLng(NPP_COORDS),n=[t];const i=windData.deg-22.5;for(let o=0;o<=20;o++){const r=i+45*o/20;n.push(getDestinationPoint(t,r,e))}return n}
+    function getDestinationPoint(e,t,n){const i=6371e3,o=e.lat*Math.PI/180,r=e.lng*Math.PI/180,s=t*Math.PI/180,a=Math.asin(Math.sin(o)*Math.cos(n/i)+Math.cos(o)*Math.sin(n/i)*Math.cos(s)),l=r+Math.atan2(Math.sin(s)*Math.sin(n/i)*Math.cos(o),Math.cos(n/i)-Math.sin(o)*Math.sin(a));return L.latLng(180*a/Math.PI,180*l/Math.PI)}
+    function isMarkerInsidePolygon(e,t){let n=!1;const i=e.lng,o=e.lat,r=t.getLatLngs()[0];for(let s=0,a=r.length-1;s<r.length;a=s++){const e=r[s].lng,t=r[s].lat,l=r[a].lng,d=r[a].lat;t>o!=d>o&&i<(l-e)*(o-t)/(d-t)+e&&(n=!n)}return n}
+    
     initializeApp();
-    //Копипаста функций, чтобы ничего не потерялось
-    updateWindInfo = function() {if(typeof windData.speed==="undefined")return;const e=windData.deg?`${windData.deg}°`:"Н/Д";windInfoPanel.innerHTML=`Ветер: <strong>${windData.speed.toFixed(1)} м/с</strong>, направление: <strong>${e}</strong><i class="arrow" style="transform: rotate(${windData.deg||0}deg);">↑</i>`},updateCityTimer=function(e,t){const n=document.getElementById(`timer-${e.toLowerCase().replace(/ /g,"-")}`);n&&(n.innerText=t)},getIodineEffectiveness=function(e){return e<=.5?"90-100%":e<=1?"~75%":e<=2?"~66%":e<=5?"50%":e<=8?"очень низкая":"нецелесообразна"},createPlumePolygon=function(e){const t=L.latLng(NPP_COORDS),n=[t];const i=windData.deg-22.5;for(let o=0;o<=20;o++){const r=i+45*o/20;n.push(getDestinationPoint(t,r,e))}return n},getDestinationPoint=function(e,t,n){const i=6371e3,o=e.lat*Math.PI/180,r=e.lng*Math.PI/180,s=t*Math.PI/180,a=Math.asin(Math.sin(o)*Math.cos(n/i)+Math.cos(o)*Math.sin(n/i)*Math.cos(s)),l=r+Math.atan2(Math.sin(s)*Math.sin(n/i)*Math.cos(o),Math.cos(n/i)-Math.sin(o)*Math.sin(a));return L.latLng(180*a/Math.PI,180*l/Math.PI)},isMarkerInsidePolygon=async function(e,t,n,i,o){const r=`https://api.openweathermap.org/data/2.5/weather?lat=${e[0]}&lon=${e[1]}&appid=${t}&units=metric&lang=ru`;try{const e=await fetch(r);if(!e.ok)throw new Error(`Ошибка API: ${e.statusText}`);const t=await e.json();windData={speed:t.wind.speed||0,deg:t.wind.deg||0},n()}catch(e){console.error("Ошибка при получении данных о погоде:",e),i.innerHTML="<strong>Не удалось получить данные о погоде.</strong>"}},fetchWindData=async function(){const e=`https://api.openweathermap.org/data/2.5/weather?lat=${NPP_COORDS[0]}&lon=${NPP_COORDS[1]}&appid=${API_KEY}&units=metric&lang=ru`;try{const t=await fetch(e);if(!t.ok)throw new Error(`Ошибка API: ${t.statusText}`);const n=await t.json();windData={speed:n.wind.speed||0,deg:n.wind.deg||0},updateWindInfo()}catch(t){console.error("Ошибка при получении данных о погоде:",t),windInfoPanel.innerHTML="<strong>Не удалось получить данные о погоде.</strong>"}};isMarkerInsidePolygon=function(e,t){let n=!1;const i=e.lng,o=e.lat,r=t.getLatLngs()[0];for(let s=0,a=r.length-1;s<r.length;a=s++){const e=r[s].lng,t=r[s].lat,l=r[a].lng,d=r[a].lat;t>o!=d>o&&i<(l-e)*(o-t)/(d-t)+e&&(n=!n)}return n};
 });
