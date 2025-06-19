@@ -1,3 +1,3 @@
 # astravyets
 Интерактивная карта распространения облака радиоактивного выброса БелАЭС
-© [Сергей Бесараб](https://linktr.ee/steanlab), [LAB-66](https://t.me/lab66)
+© [Сергей Бесараб](https://linktr.ee/steanlab) ([LAB-66](https://t.me/lab66)) 2025
