@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateCityTimer(cityName, arrivalTimeText);
                 
                 const iodineEffectiveness = getIodineEffectiveness(hours);
-                // Создаем HTML-содержимое для тултипа с кликабельной иконкой
+                // HTML-содержимое для тултипа с кликабельной иконкой
                 const tooltipContent = `
                     <div style="text-align: center; line-height: 1.5;">
                         <strong>${arrivalTimeText}</strong><br>
