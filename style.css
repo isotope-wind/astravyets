@@ -4,15 +4,17 @@ html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMa
 #map { height: 100%; width: 100%; z-index: 1; background-color: #aacbff; }
 
 .main-title { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 900; color: white; background-color: rgba(0, 0, 0, 0.75); padding: 20px 40px; text-align: center; border-radius: 10px; text-shadow: 1px 1px 3px black; transition: opacity 0.5s ease-out; pointer-events: none; }
-.main-title h1 { font-size: 2.5em; margin-bottom: 10px; }
-.main-title p { font-size: 1.2em; max-width: 600px; }
+.main-title h1 { font-size: 2.2em; margin-bottom: 10px; }
+.main-title p { font-size: 1.1em; max-width: 600px; }
 .npp-icon { font-size: 24px; text-shadow: 0 0 5px white; }
 
 .action-area { position: absolute; bottom: 0; left: 0; width: 100%; z-index: 950; display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+#iodine-info-footer { background-color: #007bff; color: white; padding: 10px 20px; text-align: center; width: 100%; font-size: 0.9em; pointer-events: all; transition: opacity 0.3s ease; }
+#iodine-info-footer b { font-weight: 600; }
 #simulateBtn { pointer-events: all; padding: 15px 30px; font-size: 1.2em; font-weight: bold; color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.2s ease; margin-bottom: 20px; }
 #simulateBtn:disabled { background-color: #6c757d; cursor: not-allowed; }
-#simulateBtn:not(:disabled) { background-color: #007bff; }
-#simulateBtn:not(:disabled):hover { background-color: #0056b3; transform: scale(1.05); }
+#simulateBtn:not(:disabled) { background-color: #0056b3; }
+#simulateBtn:not(:disabled):hover { background-color: #004a99; transform: scale(1.05); }
 
 footer { width: 100%; background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0; padding: 10px 20px; text-align: center; font-size: 0.8em; pointer-events: all; }
 footer strong { color: #ffc107; }
@@ -38,19 +40,14 @@ footer a:hover { text-decoration: none; }
 .links-panel ul { list-style-type: none; margin-bottom: 5px; padding-left: 0; }
 .links-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px; border-bottom: 1px solid #eee; font-size: 0.9em; }
 .links-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
-
-.info-popup { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 350px; padding: 25px; background: #fff; border-radius: 8px; box-shadow: 0 5px 20px rgba(0, 0, 0, .3); z-index: 2000; }
-.info-popup h4 { font-size: 1.3em; margin-bottom: 10px; }
-.close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #999; }
-.leaflet-tooltip-permanent { background-color: rgba(255, 255, 255, .95) !important; border: 1px solid #c82333 !important; border-radius: 4px; color: #333 !important; font-weight: 700; box-shadow: 0 1px 5px rgba(0, 0, 0, .4); padding: 6px 10px !important; }
-
+.leaflet-tooltip-permanent { background-color: rgba(255, 255, 255, .95) !important; border: 1px solid #0056b3 !important; color: #333 !important; font-weight: 700 !important; box-shadow: 0 1px 5px rgba(0, 0, 0, .4); padding: 6px 10px !important; text-align: center !important; font-size: 1em !important; border-radius: 4px; }
 .info-panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
 @media (max-width: 768px) {
     .main-title { width: 90%; top: 35%; padding: 15px; }
-    .main-title h1 { font-size: 1.8em; } .main-title p { font-size: 1em; }
+    .main-title h1 { font-size: 1.6em; } .main-title p { font-size: 1em; }
     .action-area { padding-bottom: 0; }
     #simulateBtn { width: 100%; border-radius: 0; margin-bottom: 0; }
-    footer { border-top: 1px solid #0056b3; }
+    footer { border-top: 1px solid #004a99; }
     #panelToggleBtn { display: block; }
     .info-panel { top: 100%; right: 0; left: 0; bottom: auto; width: 100%; max-height: var(--panel-height); border-radius: 15px 15px 0 0; transform: translateY(0); transition: transform 0.3s ease-out; }
     .info-panel.visible { transform: translateY(calc(-1 * var(--panel-height))); }
