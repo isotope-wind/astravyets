@@ -13,9 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMobile = window.innerWidth <= 768;
 
     function initializeApp() {
+        if (isMobile) { infoPanel.classList.add('hidden'); }
+        else { panelToggleBtn.style.display = 'none'; }
         initMap(); setupEventListeners(); fetchWindData();
         setInterval(fetchWindData, 15 * 60 * 1000);
-        if (isMobile) { infoPanel.classList.add('hidden'); }
     }
     
     function initMap() {
@@ -42,10 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateWindInfo();
         } catch(error) {
             console.error("Ошибка при получении данных о погоде:", error);
-            windInfoPanel.innerHTML = "<strong>Не удалось получить данные о погоде.</strong>";
+            windInfoPanel.innerHTML = "<strong>Не удалось получить данные.</strong>";
         }
     }
-
+    
     function setupEventListeners() {
         simulateBtn.addEventListener('click', startSimulation);
         if (isMobile) {
@@ -60,11 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startSimulation() {
-        if (typeof windData.speed === 'undefined') { alert('Данные о ветре еще не загружены.'); return; }
+        if (typeof windData.speed === 'undefined') { alert('Данные о ветре еще не загружены. Попробуйте через пару секунд.'); return; }
         if (windData.speed === 0) { alert("Ветер отсутствует. Распространение невозможно."); return; }
         
         mainTitle.style.display = 'none'; simulateBtn.style.display = 'none';
         panelToggleBtn.style.display = 'block'; cityTimersPanel.style.display = 'block';
+        if (!isMobile) { infoPanel.style.display = 'flex'; }
         if (isMobile && infoPanel.classList.contains('hidden')) { infoPanel.classList.remove('hidden'); }
 
         if (simulationInterval) clearInterval(simulationInterval);
@@ -109,12 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
         arrivedCities = {};
     }
     
-    function updateWindInfo(){if(typeof windData.speed==="undefined")return;const e=windData.deg?`${windData.deg}°`:"Н/Д";windInfoPanel.innerHTML=`Ветер: <strong>${windData.speed.toFixed(1)} м/с</strong>, направление: <strong>${e}</strong><i class="arrow" style="transform: rotate(${windData.deg||0}deg);">↑</i>`}
+    function updateWindInfo(){if(typeof windData.speed!=="undefined"){const e=windData.deg?`${windData.deg}°`:"Н/Д";windInfoPanel.innerHTML=`Ветер: <strong>${windData.speed.toFixed(1)} м/с</strong>, направление: <strong>${e}</strong><i class="arrow" style="transform: rotate(${windData.deg||0}deg);">↑</i>`}}
     function updateCityTimer(e,t){const n=document.getElementById(`timer-${e.toLowerCase().replace(/ /g,"-")}`);n&&(n.innerText=t)}
     function getIodineEffectiveness(e){return e<=.5?"90-100%":e<=1?"~75%":e<=2?"~66%":e<=5?"50%":e<=8?"очень низкая":"нецелесообразна"}
     function createPlumePolygon(e){const t=L.latLng(NPP_COORDS),n=[t];const i=windData.deg-22.5;for(let o=0;o<=20;o++){const r=i+45*o/20;n.push(getDestinationPoint(t,r,e))}return n}
     function getDestinationPoint(e,t,n){const i=6371e3,o=e.lat*Math.PI/180,r=e.lng*Math.PI/180,s=t*Math.PI/180,a=Math.asin(Math.sin(o)*Math.cos(n/i)+Math.cos(o)*Math.sin(n/i)*Math.cos(s)),l=r+Math.atan2(Math.sin(s)*Math.sin(n/i)*Math.cos(o),Math.cos(n/i)-Math.sin(o)*Math.sin(a));return L.latLng(180*a/Math.PI,180*l/Math.PI)}
-    function isMarkerInsidePolygon(e,t){let n=!1;const i=e.lng,o=e.lat,r=t.getLatLngs()[0];for(let s=0,a=r.length-1;s<r.length;a=s++){const e=r[s].lng,t=r[s].lat,l=r[a].lng,d=r[a].lat;t>o!=d>o&&i<(l-e)*(o-t)/(d-t)+e&&(n=!n)}return n}
+    function isMarkerInsidePolygon(e,t){let n=!1;const i=e.lng,o=e.lat,r=t.getLatLngs()[0];for(let s=0,a=r.length-1;s<r.length;a=s++){const e=r[s].lng,t=r[s].lat,l=r[a].lng,d=r[a].dlat;t>o!=d>o&&i<(l-e)*(o-t)/(d-t)+e&&(n=!n)}return n}
     
     initializeApp();
 });
