@@ -10,18 +10,22 @@
 </head>
 
 <body>
- <!-- Контейнер для карты -->
+
     <div id="map"></div>
 
-    <!-- Панель управления -->
     <div class="ui-panel">
-        <h2>Моделирование</h2>
+        <h2>Realtime моделирование</h2>
         <div id="windInfo">Загрузка данных о ветре...</div>
         <button id="simulateBtn">Симулировать выброс</button>
+        
         <div id="cityTimers">
             <h3>Время достижения (прибл.):</h3>
             <p>Вильнюс: <span id="timer-вильнюс">-</span></p>
             <p>Минск: <span id="timer-минск">-</span></p>
+            <p>Варшава: <span id="timer-варшава">-</span></p>
+            <p>Рига: <span id="timer-рига">-</span></p>
+            <p>Каунас: <span id="timer-каунас">-</span></p>
+            <p>Даугавпилс: <span id="timer-даугавпилс">-</span></p>
             <p>Киев: <span id="timer-киев">-</span></p>
             <p>Новогрудок: <span id="timer-новогрудок">-</span></p>
             <p>Жодино: <span id="timer-жодино">-</span></p>
@@ -29,26 +33,23 @@
             <p>Брест: <span id="timer-брест">-</span></p>
             <p>Москва: <span id="timer-москва">-</span></p>
             <p>Витебск: <span id="timer-витебск">-</span></p>
-            <p>Варшава: <span id="timer-варшава">-</span></p>
-            <p>Рига: <span id="timer-рига">-</span></p>
-            <p>Каунас: <span id="timer-каунас">-</span></p>
-            <p>Даугаупилс: <span id="timer-даугаупилс">-</span></p>
-            
-            <!-- Добавьте другие города по аналогии -->
         </div>
-    </div>
+
+        <div class="useful-links">
+            <h3>Полезные материалы:</h3>
+            <ul>
+                <li><a href="https://www.patreon.com/posts/50726105" target="_blank" rel="noopener noreferrer">Ветер и радиоактивные аэрозоли</a></li>
+                <li><a href="https://habr.com/ru/articles/454766/" target="_blank" rel="noopener noreferrer">Об эффективности йодной профилактики</a></li>
+            </ul>
+        </div>
+    </div> 
     
-    <!-- ДИСКЛЕЙМЕР -->
     <footer>
         <p>
-            <strong>Внимание!</strong> Этот проект является упрощенной художественной симуляцией, 
-            а не научно-точным прогнозом. Он создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных 
-            рисках и для демонстрации того, как погодные условия могут влиять на распространение 
-            гипотетического выброса. Все расчеты являются приблизительными.
+            <strong>Внимание!</strong> Этот проект является упрощенной художественной симуляцией, а не научно-точным прогнозом. Он создан радиационным химиком <a href="URL_АВТОРА" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="URL_LAB-66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение гипотетического выброса. Все расчеты являются приблизительными.
         </p>
     </footer>
 
-    <!-- Подключаем скрипты Leaflet и наш скрипт -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="script.js"></script>
 
