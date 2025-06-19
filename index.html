@@ -15,8 +15,9 @@
         <p>Нажмите на кнопку, чтобы увидеть прогноз.</p>
     </div>
 
+    <!-- Область управления вынесена из потока для гибкости -->
     <div class="action-area">
-        <button id="simulateBtn" disabled>Загрузка...</button>
+        <button id="simulateBtn" disabled>Загрузка данных о ветре...</button>
     </div>
 
     <button id="panelToggleBtn">☰</button>
@@ -57,7 +58,8 @@
     </div> 
     
     <div id="iodine-tooltip" class="info-popup" style="display: none;">
-        <span class="close-btn" id="closePopupBtn">&times;</span>
+        <!-- ИСПРАВЛЕН ID ЭЛЕМЕНТА -->
+        <span class="close-btn" id="close-popup-btn">&times;</span>
         <h4>Эффективность йода</h4>
         <p>Показывает, насколько успешной будет защита щитовидной железы при приеме йодида калия. Чем больше времени прошло с момента выброса, тем ниже эффективность.</p>
     </div>
