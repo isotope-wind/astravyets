@@ -2,9 +2,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- 1. КОНФИГУРАЦИЯ ---
-    // ВАЖНО: Замените 'YOUR_API_KEY' на ваш ключ от OpenWeatherMap!
+    // ключ от WeatherMap!
     const API_KEY = 'd243e79aea8a70aaeeeda6f16f6ccf63';
-    
     // Координаты Белорусской АЭС
      const NPP_COORDS = [54.773, 26.096];
      const CITIES = {
@@ -97,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tooltipContent = `
                     <div style="text-align: center;">
                         <strong>${arrivalTimeText}</strong><br>
-                        Эфф. йода: ${iodineEffectiveness}
+                        Эфф. йодида: ${iodineEffectiveness}
                     </div>
                 `;
 
@@ -110,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Вспомогательная функция для расчета эффективности йода
+    // Вспомогательная функция для расчета эффективности йодной профилактики
     function getIodineEffectiveness(hours) {
         if (hours <= 0.5) return '90-100%';
         if (hours <= 1) return '~75%';
