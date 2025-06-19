@@ -1,6 +1,7 @@
-/* style.css (финальная исправленная версия) */
+/* style.css (финальная версия) */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent;
@@ -18,35 +19,43 @@ body {
 
 .npp-icon { font-size: 24px; text-shadow: 0 0 5px white; }
 
+/* === Область управления внизу === */
 #simulateBtn {
     position: absolute; bottom: 80px; left: 50%;
-    transform: translateX(-50%); z-index: 950; /* Z-INDEX ДОБАВЛЕН */
+    transform: translateX(-50%); z-index: 950;
     padding: 15px 30px; font-size: 1.2em; font-weight: bold;
     color: white; background-color: #007bff; border: none;
     border-radius: 50px; cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.2s ease;
 }
 #simulateBtn:hover { background-color: #0056b3; transform: translateX(-50%) scale(1.05); }
-#simulateBtn.active { background-color: #c82333; }
 
+footer {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0;
+    padding: 10px 20px; text-align: center;
+    font-size: 0.8em; z-index: 900;
+}
+footer strong { color: #ffc107; }
+footer a { color: #82c0ff; }
+
+/* === Панели === */
 #panelToggleBtn {
-    position: absolute; top: 20px; right: 20px; z-index: 1000;
+    display: none; position: absolute; top: 20px; right: 20px; z-index: 1000;
     width: 45px; height: 45px; font-size: 24px; color: #333;
     background: rgba(255,255,255,0.9); border: 1px solid #ccc;
     border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .info-panel {
-    position: absolute; top: 15px; right: 15px; width: 340px; /* Немного шире */
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    position: absolute; top: 15px; right: 15px; width: 340px;
+    background-color: rgba(255, 255, 255, 0.95); border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     z-index: 1000; display: flex; flex-direction: column;
     max-height: calc(100vh - 30px);
 }
 .panel-header { display: none; }
 .panel-content { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-
-/* ... остальные стили info-panel, .actions-panel, etc. без изменений ... */
 #windInfo { font-size: 1em; line-height: 1.2; }
 .arrow { display: inline-block; font-size: 22px; color: #007bff; margin-left: 10px; vertical-align: middle; }
 .info-panel h3 { font-size: 1.1em; margin-bottom: 3px; }
@@ -56,33 +65,29 @@ body {
 .actions-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px; border-bottom: 1px solid #eee; }
 .actions-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
 
-footer {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0;
-    padding: 8px 20px; text-align: center; z-index: 900; /* Z-INDEX ПОНИЖЕН */
-    font-size: 0.8em; line-height: 1.4;
-}
+.info-popup { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:350px; padding:25px; background:#fff; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.3); z-index:2000; }
+.info-popup h4 { font-size:1.3em; margin-bottom:10px; }
+.close-btn { position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; color:#999; }
+.leaflet-tooltip-permanent { background-color:rgba(255,255,255,.95)!important; border:1px solid #c82333!important; border-radius:4px; color:#333!important; font-weight:700; box-shadow:0 1px 5px rgba(0,0,0,.4); padding:6px 10px!important; }
 
+
+/* === МОБИЛЬНАЯ АДАПТАЦИЯ === */
 @media (max-width: 768px) {
     .main-title { width: 90%; top: 30%; padding: 15px; }
     .main-title h1 { font-size: 1.8em; } .main-title p { font-size: 1em; }
 
-    #simulateBtn {
-        bottom: 90px; /* ПОДНЯЛИ КНОПКУ ВЫШЕ */
-        width: calc(100% - 60px);
-        z-index: 1001; /* ВЫСШИЙ ПРИОРИТЕТ */
-    }
-
+    #simulateBtn { width: calc(100% - 40px); bottom: 20px; /* Отодвинули от нижнего края */ }
+    footer { display: none; } /* Скрываем футер на мобильных для чистоты, вся инфо есть в панели */
+    
     #panelToggleBtn { display: block; }
     
     .info-panel {
         top: 100%; right: 0; left: 0; bottom: auto; width: 100%;
-        max-height: 90vh; border-radius: 15px 15px 0 0;
+        max-height: 85vh; border-radius: 15px 15px 0 0;
         transform: translateY(0); transition: transform 0.3s ease-out;
         z-index: 1100; box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-        height: auto; /* АВТОМАТИЧЕСКАЯ ВЫСОТА */
     }
-    .info-panel.hidden { transform: translateY(calc(100% - 60px)); }
+    .info-panel.hidden { transform: translateY(calc(100% - 60px)); /* Показываем только заголовок */ }
     
     .panel-header {
         display: flex; justify-content: space-between; align-items: center;
@@ -90,10 +95,4 @@ footer {
         background: white; border-radius: 15px 15px 0 0; border-bottom: 1px solid #ddd;
     }
     .panel-header h2 { font-size: 1.3em; border: none; }
-    
-    .panel-content { padding: 0 20px 20px 20px; }
-    footer { font-size: 0.75em; padding: 10px 10px; }
 }
-
-/* Копипаста остальных стилей */
-.info-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:350px;padding:25px;background:#fff;border-radius:8px;box-shadow:0 5px 20px rgba(0,0,0,.3);z-index:2000}.info-popup h4{font-size:1.3em;margin-bottom:10px}.close-btn{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}footer p{max-width:800px;margin:0 auto}footer strong{color:#ffc107}footer a{color:#82c0ff;text-decoration:underline}footer a:hover{text-decoration:none}.leaflet-tooltip-permanent{background-color:rgba(255,255,255,.95)!important;border:1px solid #c82333!important;border-radius:4px;color:#333!important;font-weight:700;box-shadow:0 1px 5px rgba(0,0,0,.4);padding:6px 10px!important}
