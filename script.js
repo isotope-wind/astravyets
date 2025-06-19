@@ -1,21 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- 1. КОНСТАНТЫ И СОСТОЯНИЕ ---
     const API_KEY = 'd243e79aea8a70aaeeeda6f16f6ccf63';
     const NPP_COORDS = [54.773, 26.096];
     const CITIES = {"Вильнюс":[54.687,25.279],"Минск":[53.904,27.561],"Варшава":[52.229,21.012],"Рига":[56.949,24.105],"Каунас":[54.898,23.903],"Даугавпилс":[55.874,26.516],"Киев":[50.45,30.523],"Новогрудок":[53.596,25.827],"Жодино":[54.093,28.34],"Гродно":[53.669,23.826],"Брест":[52.097,23.734],"Москва":[55.755,37.617],"Витебск":[55.19,30.205]};
-    const SIMULATION_SPEED_MULTIPLIER = 3600, UPDATE_INTERVAL_MS = 100, PLUME_SPREAD_ANGLE = 45;
+    const SIMULATION_SPEED_MULTIPLIER = 3600;
+    const UPDATE_INTERVAL_MS = 100;
+    const PLUME_SPREAD_ANGLE = 45;
 
     let appState = { status: 'loading' }; 
     let map, windData = {}, simulationInterval = null, plumeLayer = null, cityMarkers = {}, arrivedCities = {};
 
     const ui = {
-        simulateBtn: document.getElementById('simulateBtn'), mainTitle: document.getElementById('mainTitle'),
-        infoPanel: document.getElementById('infoPanel'), panelToggleBtn: document.getElementById('panelToggleBtn'),
-        panelHeader: document.querySelector('.panel-header'), cityTimers: document.getElementById('cityTimers'),
-        iodinePopup: document.getElementById('iodine-tooltip'), closePopupBtn: document.getElementById('close-popup-btn'),
+        simulateBtn: document.getElementById('simulateBtn'),
+        mainTitle: document.getElementById('mainTitle'),
+        infoPanel: document.getElementById('infoPanel'),
+        panelToggleBtn: document.getElementById('panelToggleBtn'),
+        panelHeader: document.querySelector('.panel-header'),
+        cityTimers: document.getElementById('cityTimers'),
+        iodinePopup: document.getElementById('iodine-tooltip'),
+        closePopupBtn: document.getElementById('close-popup-btn'),
         overlay: document.getElementById('infoPanelOverlay')
     };
     const isMobile = window.innerWidth <= 768;
+
+    // --- ОСНОВНЫЕ ФУНКЦИИ ---
 
     function initializeApp() {
         populateCityTimers();
@@ -23,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setupEventListeners();
         setAppState('loading');
         fetchAndUpdateWindData();
-        setInterval(fetchAndUpdateWindData, 2 * 60 * 1000); 
+        // ИЗМЕНЕНИЕ: Интервал обновления данных теперь 1 минута (60 * 1000 миллисекунд)
+        setInterval(fetchAndUpdateWindData, 60 * 1000); 
     }
 
     function populateCityTimers() {
@@ -38,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setAppState(newState) {
         appState.status = newState;
         const updateElement = (element, action) => { if (element) action(element); };
+        
         switch (newState) {
             case 'loading':
                 updateElement(ui.simulateBtn, el => { el.disabled = true; el.textContent = 'Загрузка...'; });
@@ -105,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`API ${response.status}`);
             const data = await response.json();
-            if (!data.wind) throw new Error('No wind data in API response');
+            if (!data.wind) throw new Error('No wind data');
             windData = { speed: data.wind.speed || 0, deg: data.wind.deg || 0 };
             updateWindInfoUI();
             if(appState.status === 'loading' || appState.status === 'error') setAppState('ready');
@@ -119,8 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateWindInfoUI(isError = false) {
-        const pointer = document.getElementById('wind-pointer'), speedDisplay = document.getElementById('wind-speed'), updateTimeDisplay = document.getElementById('update-time');
+        const pointer = document.getElementById('wind-pointer');
+        const speedDisplay = document.getElementById('wind-speed');
+        const updateTimeDisplay = document.getElementById('update-time');
+
         if (!pointer || !speedDisplay || !updateTimeDisplay) return;
+
         if (isError) {
             speedDisplay.textContent = 'Ошибка';
             updateTimeDisplay.textContent = 'нет данных';
@@ -132,19 +147,35 @@ document.addEventListener('DOMContentLoaded', () => {
             speedDisplay.textContent = `${windData.speed.toFixed(1)}`;
             speedDisplay.classList.add('has-data');
             updateTimeDisplay.textContent = `обновлено в ${new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`;
+        } else {
+            speedDisplay.textContent = '--';
+            speedDisplay.classList.remove('has-data');
+            updateTimeDisplay.textContent = 'ожидание...';
         }
     }
     
     async function startSimulation() {
         if (appState.status !== 'ready') return;
-        ui.simulateBtn.disabled = true; ui.simulateBtn.textContent = 'Получение данных...';
+        ui.simulateBtn.disabled = true;
+        ui.simulateBtn.textContent = 'Получение данных...';
+        
         const success = await fetchAndUpdateWindData();
-        if (!success) { alert('Не удалось получить актуальные данные о ветре.'); setAppState('ready'); return; }
-        if (windData.speed === 0) { alert("Ветер отсутствует. Распространение аэрозолей невозможно."); setAppState('ready'); return; }
+        if (!success) {
+            alert('Не удалось получить актуальные данные о ветре.');
+            setAppState('ready');
+            return;
+        }
+        if (windData.speed === 0) {
+            alert("Ветер отсутствует. Распространение аэрозолей невозможно.");
+            setAppState('ready');
+            return;
+        }
         setAppState('simulating');
+
         if (simulationInterval) clearInterval(simulationInterval);
         if (plumeLayer) map.removeLayer(plumeLayer);
         resetTimers();
+        
         let totalDistance = 0;
         simulationInterval = setInterval(() => {
             totalDistance += windData.speed * (UPDATE_INTERVAL_MS / 1000) * SIMULATION_SPEED_MULTIPLIER;
@@ -160,17 +191,28 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const cityName in CITIES) {
             if (!arrivedCities[cityName] && isMarkerInsidePolygon(L.latLng(CITIES[cityName]), plumeLayer)) {
                 arrivedCities[cityName] = true;
-                const distanceToCity = map.distance(NPP_COORDS, CITIES[cityName]), timeToArrivalSeconds = distanceToCity / windData.speed;
+                
+                const distanceToCity = map.distance(NPP_COORDS, CITIES[cityName]);
+                const timeToArrivalSeconds = distanceToCity / windData.speed;
                 const hours = Math.floor(timeToArrivalSeconds / 3600), minutes = Math.floor((timeToArrivalSeconds % 3600) / 60);
-                const arrivalTimeText = `~ ${hours} ч. ${minutes} мин.`, iodineEffectiveness = getIodineEffectiveness(hours);
-                const tooltipContent = `<div style="text-align:center;line-height:1.5;"><strong>${arrivalTimeText}</strong><br>Эфф. йода: ${iodineEffectiveness} <span class="iodine-info-btn" title="Что это значит?">(?)</span></div>`;
+                
+                const arrivalTimeText = `~ ${hours} ч. ${minutes} мин.`;
                 updateCityTimer(cityName, arrivalTimeText);
+                
+                const iodineEffectiveness = getIodineEffectiveness(hours);
+                const tooltipContent = `<div style="text-align:center;line-height:1.5;"><strong>${arrivalTimeText}</strong><br>Эфф. йода: ${iodineEffectiveness} <span class="iodine-info-btn" title="Что это значит?">(?)</span></div>`;
+                
                 const markerToUpdate = cityMarkers[cityName];
                 if (markerToUpdate) {
                     markerToUpdate.setTooltipContent(tooltipContent);
                     markerToUpdate.once("tooltipopen", (e) => {
                         const infoBtn = e.tooltip._container.querySelector(".iodine-info-btn");
-                        if (infoBtn && ui.iodinePopup) infoBtn.addEventListener("click", event => { event.stopPropagation(); ui.iodinePopup.style.display = "block"; });
+                        if (infoBtn && ui.iodinePopup) {
+                            infoBtn.addEventListener("click", event => {
+                                event.stopPropagation();
+                                ui.iodinePopup.style.display = "block";
+                            });
+                        }
                     });
                     markerToUpdate.openTooltip();
                 }
@@ -178,12 +220,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    function resetTimers() { for(const e in CITIES){ updateCityTimer(e,"-"); const t=cityMarkers[e]; t&&t.isTooltipOpen()&&t.closeTooltip().setTooltipContent(e) } arrivedCities = {} }
-    function updateCityTimer(e, t) { const i=document.getElementById(`timer-${e.toLowerCase().replace(/ /g,"-")}`); i&&(i.innerText = t); }
-    function getIodineEffectiveness(e) { return e<=.5?"90-100%":e<=1?"~75%":e<=2?"~66%":e<=5?"50%":e<=8?"очень низкая":"нецелесообразна"; }
-    function createPlumePolygon(e) { const t=L.latLng(NPP_COORDS),i=[t],a=windData.deg-22.5; for(let l=0;l<=20;l++)i.push(getDestinationPoint(t,a+2.25*l,e));return i }
-    function getDestinationPoint(e,t,i) { const a=6371e3,l=e.lat*Math.PI/180,s=e.lng*Math.PI/180,o=t*Math.PI/180,n=Math.asin(Math.sin(l)*Math.cos(i/a)+Math.cos(l)*Math.sin(i/a)*Math.cos(o)),r=s+Math.atan2(Math.sin(o)*Math.sin(i/a)*Math.cos(l),Math.cos(i/a)-Math.sin(l)*Math.sin(n)); return L.latLng(180*n/Math.PI,180*r/Math.PI) }
-    function isMarkerInsidePolygon(e,t) { let i=!1,a=e.lng,l=e.lat,s=t.getLatLngs()[0]; for(let o=0,n=s.length-1;o<s.length;n=o++){ const e=s[o].lng,r=s[o].lat,c=s[n].lng,d=s[n].lat,_=(r>l)!==(d>l)&&a<(c-e)*(l-r)/(d-r)+e; _&&(i=!i) } return i; }
+    function resetTimers() {
+        for(const cityName in CITIES) {
+            updateCityTimer(cityName,"-");
+            const marker = cityMarkers[cityName];
+            if(marker && marker.isTooltipOpen()) {
+                marker.closeTooltip().setTooltipContent(cityName);
+            }
+        }
+        arrivedCities = {};
+    }
     
+    function updateCityTimer(cityName, text) {
+        const timerElement = document.getElementById(`timer-${cityName.toLowerCase().replace(/ /g,"-")}`);
+        if(timerElement) timerElement.innerText = text;
+    }
+    
+    function getIodineEffectiveness(hours) {
+        if (hours <= 0.5) return "90-100%";
+        if (hours <= 1) return "~75%";
+        if (hours <= 2) return "~66%";
+        if (hours <= 5) return "50%";
+        if (hours <= 8) return "очень низкая";
+        return "нецелесообразна";
+    }
+
+    function createPlumePolygon(distance) {
+        const center = L.latLng(NPP_COORDS);
+        // Модель "Гауссовой струи"
+        const plumeHalfWidth = distance * Math.tan(15 * Math.PI / 180); // Угол расширения ~15 градусов
+        const segments = 50;
+        const segmentLength = distance / segments;
+        
+        let currentPoint = center;
+        const centerLine = [center];
+        for (let i = 0; i < segments; i++) {
+            currentPoint = getDestinationPoint(currentPoint, windData.deg, segmentLength);
+            centerLine.push(currentPoint);
+        }
+
+        const leftBoundary = [], rightBoundary = [];
+        for (let i = 0; i < centerLine.length; i++) {
+            const currentWidth = (i / segments) * plumeHalfWidth;
+            const leftPoint = getDestinationPoint(centerLine[i], windData.deg - 90, currentWidth);
+            const rightPoint = getDestinationPoint(centerLine[i], windData.deg + 90, currentWidth);
+            leftBoundary.push(leftPoint);
+            rightBoundary.push(rightPoint);
+        }
+        return [center, ...leftBoundary, ...rightBoundary.slice(1).reverse()];
+    }
+
+    function getDestinationPoint(startPoint, bearing, distance) {
+        const R = 6371e3;
+        const lat1 = startPoint.lat * Math.PI / 180, lon1 = startPoint.lng * Math.PI / 180;
+        const brng = bearing * Math.PI / 180;
+        const lat2 = Math.asin(Math.sin(lat1) * Math.cos(distance/R) + Math.cos(lat1) * Math.sin(distance/R) * Math.cos(brng));
+        const lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(distance/R) * Math.cos(lat1), Math.cos(distance/R) - Math.sin(lat1) * Math.sin(lat2));
+        return L.latLng(lat2 * 180 / Math.PI, lon2 * 180 / Math.PI);
+    }
+    
+    function isMarkerInsidePolygon(markerLatLng, polygonLayer) {
+        let inside = false;
+        const x = markerLatLng.lng, y = markerLatLng.lat;
+        const points = polygonLayer.getLatLngs()[0];
+        for(let i = 0, j = points.length - 1; i < points.length; j = i++) {
+            const xi = points[i].lng, yi = points[i].lat;
+            const xj = points[j].lng, yj = points[j].lat;
+            const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    // --- ЗАПУСК ПРИЛОЖЕНИЯ ---
     initializeApp();
 });
