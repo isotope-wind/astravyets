@@ -1,96 +1,94 @@
-/* style.css (компактная версия) */
+/* style.css (финальная версия) */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     height: 100vh; overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* Убирает синюю подсветку при тапе на мобильных */
 }
 
 #map { height: 100%; width: 100%; z-index: 1; }
 
 .main-title {
-    position: absolute; top: 50%; left: 50%;
+    position: absolute; top: 35%; left: 50%; /* Сдвинуто чуть выше */
     transform: translate(-50%, -50%);
-    z-index: 900;
-    color: white; background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px 40px; text-align: center;
-    border-radius: 10px; text-shadow: 1px 1px 3px black;
-    transition: opacity 0.5s ease-out;
+    z-index: 900; color: white; background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px 40px; text-align: center; border-radius: 10px;
+    text-shadow: 1px 1px 3px black; transition: opacity 0.5s ease-out;
 }
 .main-title h1 { font-size: 2.5em; margin-bottom: 10px; }
 .main-title p { font-size: 1.2em; max-width: 600px; }
 
 .npp-icon { font-size: 24px; text-shadow: 0 0 5px white; }
 
-.ui-panel {
-    position: absolute; top: 15px; right: 15px; /* Уменьшили отступ от края */
-    width: 320px; background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    padding: 15px; /* Уменьшили внутренние отступы */
-    z-index: 1000; display: flex;
-    flex-direction: column;
-    gap: 10px; /* УМЕНЬШИЛИ ПРОМЕЖУТОК МЕЖДУ ЭЛЕМЕНТАМИ */
-    max-height: calc(100vh - 30px);
-    overflow-y: auto;
-}
-
-.ui-panel h2 {
-    font-size: 1.4em; /* Уменьшили шрифт */
-    padding-bottom: 8px; /* Уменьшили отступ */
-    border-bottom: 1px solid #ccc;
-    margin-bottom: -5px; /* Прижали следующий элемент */
-}
-.ui-panel h3 { font-size: 1.1em; margin-bottom: 3px; }
-
-#windInfo { font-size: 1em; line-height: 1.2; display: flex; align-items: center; }
-.arrow { display: inline-block; font-size: 22px; color: #007bff; margin-left: 10px; transition: transform 0.5s ease-out; }
-
 #simulateBtn {
-    background-color: #007bff; color: white; font-size: 1.1em; /* Уменьшили шрифт */
-    font-weight: bold; border: none; padding: 10px 12px; /* Уменьшили padding */
-    border-radius: 5px; cursor: pointer; transition: all 0.2s ease;
+    position: absolute; bottom: 80px; left: 50%;
+    transform: translateX(-50%); z-index: 950;
+    padding: 15px 30px; font-size: 1.2em; font-weight: bold;
+    color: white; background-color: #007bff;
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.2s ease;
 }
-#simulateBtn:hover { background-color: #0056b3; transform: scale(1.02); }
+#simulateBtn:hover { background-color: #0056b3; transform: translateX(-50%) scale(1.05); }
 #simulateBtn.active { background-color: #c82333; }
 
-#cityTimers { display: none; }
-#cityTimers p { margin: 3px 0; } /* Уменьшили отступы */
-#cityTimers span { font-weight: bold; }
+#panelToggleBtn {
+    display: none; /* Скрыто на десктопе */
+    position: absolute; top: 20px; right: 20px; z-index: 1000;
+    width: 45px; height: 45px; font-size: 24px; color: #333;
+    background: rgba(255,255,255,0.9); border: 1px solid #ccc;
+    border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
-.actions-panel h3 { margin-top: 5px; } /* Уменьшили отступ */
-.actions-panel .subheader { font-size: 1em; color: #555; }
+.info-panel {
+    position: absolute; top: 15px; right: 15px; width: 320px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1000; display: flex; flex-direction: column;
+}
+.panel-header { display: none; }
+.panel-content { padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+#windInfo { font-size: 1em; line-height: 1.2; }
+.arrow { display: inline-block; font-size: 22px; color: #007bff; margin-left: 10px; vertical-align: middle; }
+.info-panel h3 { font-size: 1.1em; margin-bottom: 3px; }
+#cityTimers p { margin: 3px 0; } #cityTimers span { font-weight: bold; }
+.actions-panel h3.subheader { font-size: 1em; color: #555; margin-top: 10px; }
 .actions-panel ul { list-style-type: none; margin-bottom: 5px; }
-.actions-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 4px 0; border-bottom: 1px solid #eee; }
+.actions-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px; border-bottom: 1px solid #eee; }
 .actions-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
 
-.info-popup {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 350px; padding: 25px; background: white; border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 2000;
-}
-.info-popup h4 { font-size: 1.3em; margin-bottom: 10px; }
-.close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #999; }
+.info-popup, footer, .leaflet-tooltip-permanent { /* без изменений */ }
 
-footer {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0; padding: 8px 20px; /* Уменьшили padding */
-    text-align: center; z-index: 1000; font-size: 0.75em; line-height: 1.3;
-}
-footer p { max-width: 800px; margin: 0 auto; }
-footer strong { color: #ffc107; }
-footer a { color: #82c0ff; text-decoration: underline; }
-footer a:hover { text-decoration: none; }
-
-.leaflet-tooltip-permanent {
-    background-color: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid #c82333 !important;
-    border-radius: 4px; color: #333 !important; font-weight: bold;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.4); padding: 6px 10px !important;
-}
-
+/* МОБИЛЬНАЯ АДАПТАЦИЯ */
 @media (max-width: 768px) {
-    .main-title h1 { font-size: 1.8em; }
-    .main-title p { font-size: 1em; }
-    .ui-panel { width: calc(100% - 20px); top: 10px; left: 10px; right: 10px; }
+    .main-title { width: 90%; top: 30%; padding: 15px; }
+    .main-title h1 { font-size: 1.6em; }
+    .main-title p { font-size: 0.9em; }
+
+    #simulateBtn { bottom: 80px; width: calc(100% - 60px); }
+    #panelToggleBtn { display: block; }
+
+    .info-panel {
+        top: 100%; right: 0; left: 0; bottom: auto; width: 100%; height: 90vh;
+        max-height: 90vh; border-radius: 15px 15px 0 0;
+        transform: translateY(0); transition: transform 0.3s ease-out;
+        z-index: 1100; box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .info-panel.hidden { transform: translateY(calc(100% - 60px)); /* Показываем только заголовок */ }
+    .info-panel.visible { transform: translateY(0); }
+    
+    .panel-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 15px; border-bottom: 1px solid #ddd; cursor: pointer;
+        background: white; border-radius: 15px 15px 0 0; height: 60px;
+    }
+    .panel-header h2 { font-size: 1.3em; }
+    .close-panel-btn { display: none; } /* Кнопка закрытия не нужна, можно свайпать/тапать по хедеру */
+    
+    .panel-content { max-height: calc(90vh - 60px); }
 }
+
+/* Копи-паста остальных стилей на всякий случай */
+.info-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:350px;padding:25px;background:#fff;border-radius:8px;box-shadow:0 5px 20px rgba(0,0,0,.3);z-index:2000}.info-popup h4{font-size:1.3em;margin-bottom:10px}.close-btn{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:#999}footer{position:absolute;bottom:0;left:0;width:100%;background-color:rgba(0,0,0,.75);color:#f0f0f0;padding:8px 20px;text-align:center;z-index:1000;font-size:.75em;line-height:1.3}footer p{max-width:800px;margin:0 auto}footer strong{color:#ffc107}footer a{color:#82c0ff;text-decoration:underline}footer a:hover{text-decoration:none}.leaflet-tooltip-permanent{background-color:rgba(255,255,255,.95)!important;border:1px solid #c82333!important;border-radius:4px;color:#333!important;font-weight:700;box-shadow:0 1px 5px rgba(0,0,0,.4);padding:6px 10px!important}
