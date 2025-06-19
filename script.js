@@ -1,5 +1,5 @@
-// Ждем, пока вся структура страницы (DOM) будет загружена
 document.addEventListener('DOMContentLoaded', () => {
+
     // --- 1. КОНФИГУРАЦИЯ И КОНСТАНТЫ ---
     const API_KEY = 'd243e79aea8a70aaeeeda6f16f6ccf63';
     const NPP_COORDS = [54.773, 26.096];
@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 2. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И UI ЭЛЕМЕНТЫ ---
     let map, windData = {}, simulationInterval = null, plumeLayer = null, cityMarkers = {}, arrivedCities = {};
-
     const windInfoPanel = document.getElementById('windInfo');
     const simulateBtn = document.getElementById('simulateBtn');
     const mainTitle = document.getElementById('mainTitle');
@@ -22,15 +21,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const iodinePopup = document.getElementById('iodine-tooltip');
     const closePopupBtn = document.getElementById('close-popup-btn');
 
-    // --- 3. ФУНКЦИИ ИНИЦИАЛИЗАЦИИ И СЕТИ ---
+    // --- 3. ГЛАВНАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ---
+    function initializeApp() {
+        initMap();
+        setupEventListeners();
+        fetchWindData();
+        setInterval(fetchWindData, 15 * 60 * 1000); // Обновлять погоду каждые 15 минут
+    }
+    
+    // --- 4. ФУНКЦИИ ИНИЦИАЛИЗАЦИИ И СЕТИ ---
     function initMap() {
-        map = L.map('map', {zoomControl: false}).setView(NPP_COORDS, 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
-        L.marker(NPP_COORDS, { icon: L.divIcon({ className: 'npp-icon', html: '☢️' }) }).addTo(map).bindPopup("Белорусская АЭС");
-        for (const cityName in CITIES) {
-            const marker = L.marker(CITIES[cityName]).addTo(map).bindPopup(cityName);
-            marker.bindTooltip(cityName, { permanent: false, direction: 'top' });
-            cityMarkers[cityName] = marker;
+        if (map) return; // Предотвращаем повторную инициализацию
+        try {
+            map = L.map('map', {zoomControl: false}).setView(NPP_COORDS, 6);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors' 
+            }).addTo(map);
+
+            L.marker(NPP_COORDS, { icon: L.divIcon({ className: 'npp-icon', html: '☢️' }) }).addTo(map).bindPopup("Белорусская АЭС");
+            
+            for (const cityName in CITIES) {
+                const marker = L.marker(CITIES[cityName]).addTo(map).bindPopup(cityName);
+                marker.bindTooltip(cityName, { permanent: false, direction: 'top' });
+                cityMarkers[cityName] = marker;
+            }
+        } catch (error) {
+            console.error("Не удалось инициализировать карту:", error);
+            // Можно показать пользователю сообщение об ошибке, если нужно
         }
     }
 
@@ -40,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Ошибка API: ${response.statusText}`);
             const data = await response.json();
-            windData = { speed: data.wind.speed, deg: data.wind.deg };
+            windData = { speed: data.wind.speed || 0, deg: data.wind.deg || 0 };
             updateWindInfo();
         } catch (error) {
             console.error("Ошибка при получении данных о погоде:", error);
@@ -48,50 +65,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- 4. ФУНКЦИИ ОБНОВЛЕНИЯ ИНТЕРФЕЙСА (UX) ---
-    function updateWindInfo() {
-        if (!windData.speed) return;
-        const windDirection = windData.deg ? `${windData.deg}°` : 'Н/Д';
-        windInfoPanel.innerHTML = `Ветер: <strong>${windData.speed.toFixed(1)} м/с</strong>, направление: <strong>${windDirection}</strong><i class="arrow" style="transform: rotate(${windData.deg || 0}deg);">↑</i>`;
-    }
-    
-    function resetTimers() {
-        // Возвращаем кнопку в исходное состояние
-        simulateBtn.classList.remove('active');
-        simulateBtn.innerText = '▶︎ Начать симуляцию';
-
-        // Сбрасываем таймеры и тултипы
-        for (const cityName in CITIES) {
-            updateCityTimer(cityName, '-');
-            const marker = cityMarkers[cityName];
-            if (marker && marker.isTooltipOpen()) {
-                marker.closeTooltip();
-                marker.setTooltipContent(cityName);
+    // --- 5. ОБРАБОТЧИКИ СОБЫТИЙ ---
+    function setupEventListeners() {
+        simulateBtn.addEventListener('click', startSimulation);
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('iodine-info-btn')) {
+                iodinePopup.style.display = 'block';
             }
-        }
-        arrivedCities = {};
-    }
-    
-    function updateCityTimer(city, text) {
-        const timerElement = document.getElementById(`timer-${city.toLowerCase().replace(/ /g, '-')}`);
-        if (timerElement) timerElement.innerText = text;
+        });
+        closePopupBtn.addEventListener('click', () => { iodinePopup.style.display = 'none'; });
+        window.addEventListener('click', (e) => {
+            if (e.target === iodinePopup) {
+                iodinePopup.style.display = 'none';
+            }
+        });
     }
 
-    // --- 5. ОСНОВНАЯ ЛОГИКА СИМУЛЯЦИИ ---
+    // --- 6. ОСНОВНАЯ ЛОГИКА СИМУЛЯЦИИ ---
     function startSimulation() {
-        if (!windData.speed || windData.speed === 0) { 
-            alert('Данные о ветре еще не загружены или ветер отсутствует. Пожалуйста, подождите или попробуйте позже.'); 
-            return; 
+        if (typeof windData.speed === 'undefined') {
+            alert('Данные о ветре еще не загружены. Пожалуйста, подождите.'); 
+            return;
+        }
+        if (windData.speed === 0) {
+            alert("Ветер отсутствует. Распространение аэрозолей невозможно.");
+            return;
         }
         
-        // UX: Прячем заголовок, меняем кнопку, показываем результаты
-        mainTitle.style.opacity = '0';
-        mainTitle.style.pointerEvents = 'none';
-        simulateBtn.classList.add('active');
-        simulateBtn.innerText = 'Симуляция запущена...';
+        mainTitle.style.opacity = '0'; mainTitle.style.pointerEvents = 'none';
+        simulateBtn.classList.add('active'); simulateBtn.innerText = 'Симуляция запущена...';
         cityTimersPanel.style.display = 'block';
 
-        // Сброс предыдущей симуляции
         if (simulationInterval) clearInterval(simulationInterval);
         if (plumeLayer) map.removeLayer(plumeLayer);
         resetTimers();
@@ -101,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const timeDelta = (UPDATE_INTERVAL_MS / 1000) * SIMULATION_SPEED_MULTIPLIER;
             totalDistance += windData.speed * timeDelta;
             const plumePoints = createPlumePolygon(totalDistance);
-
             if (!plumeLayer) {
                 plumeLayer = L.polygon(plumePoints, { color: 'red', fillColor: '#f03', fillOpacity: 0.5, weight: 1 }).addTo(map);
             } else {
@@ -118,20 +121,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 arrivedCities[cityName] = true;
                 const distanceToCity = map.distance(NPP_COORDS, CITIES[cityName]);
                 const timeToArrivalSeconds = distanceToCity / windData.speed;
-                const hours = Math.floor(timeToArrivalSeconds / 3600);
-                const minutes = Math.floor((timeToArrivalSeconds % 3600) / 60);
-
+                const hours = Math.floor(timeToArrivalSeconds / 3600), minutes = Math.floor((timeToArrivalSeconds % 3600) / 60);
                 const arrivalTimeText = `~ ${hours} ч. ${minutes} мин.`;
                 updateCityTimer(cityName, arrivalTimeText);
-                
                 const iodineEffectiveness = getIodineEffectiveness(hours);
-                // HTML-содержимое для тултипа с кликабельной иконкой
-                const tooltipContent = `
-                    <div style="text-align: center; line-height: 1.5;">
-                        <strong>${arrivalTimeText}</strong><br>
-                        Эфф. йода: ${iodineEffectiveness} <span class="iodine-info-btn" title="Что это значит?">(?)</span>
-                    </div>`;
-
+                const tooltipContent = `<div style="text-align: center; line-height: 1.5;"><strong>${arrivalTimeText}</strong><br>Эфф. йода: ${iodineEffectiveness} <span class="iodine-info-btn" title="Что это значит?">(?)</span></div>`;
                 const markerToUpdate = cityMarkers[cityName];
                 if (markerToUpdate) {
                     markerToUpdate.setTooltipContent(tooltipContent);
@@ -140,15 +134,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    // --- 7. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+    function updateWindInfo() {
+        if (typeof windData.speed === 'undefined') return;
+        const windDirection = windData.deg ? `${windData.deg}°` : 'Н/Д';
+        windInfoPanel.innerHTML = `Ветер: <strong>${windData.speed.toFixed(1)} м/с</strong>, направление: <strong>${windDirection}</strong><i class="arrow" style="transform: rotate(${windData.deg || 0}deg);">↑</i>`;
+    }
+
+    function resetTimers() {
+        simulateBtn.classList.remove('active'); simulateBtn.innerText = '▶︎ Начать симуляцию';
+        for (const cityName in CITIES) {
+            updateCityTimer(cityName, '-');
+            const marker = cityMarkers[cityName];
+            if (marker && marker.isTooltipOpen()) {
+                marker.closeTooltip(); marker.setTooltipContent(cityName);
+            }
+        }
+        arrivedCities = {};
+    }
+
+    function updateCityTimer(city, text) {
+        const timerElement = document.getElementById(`timer-${city.toLowerCase().replace(/ /g, '-')}`);
+        if (timerElement) timerElement.innerText = text;
+    }
     
-    // --- 6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
     function getIodineEffectiveness(hours) {
-        if (hours <= 0.5) return '90-100%';
-        if (hours <= 1) return '~75%';
-        if (hours <= 2) return '~66%';
-        if (hours <= 5) return '50%';
-        if (hours <= 8) return 'очень низкая';
-        return 'нецелесообразна';
+        if (hours <= 0.5) return '90-100%'; if (hours <= 1) return '~75%'; if (hours <= 2) return '~66%';
+        if (hours <= 5) return '50%'; if (hours <= 8) return 'очень низкая'; return 'нецелесообразна';
     }
 
     function createPlumePolygon(radius) {
@@ -178,28 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return inside;
     }
 
-    // --- 7. ОБРАБОТЧИКИ СОБЫТИЙ ---
-    simulateBtn.addEventListener('click', startSimulation);
-
-    // Обработчик для показа поп-апа с информацией о йоде (через делегирование)
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('iodine-info-btn')) {
-            iodinePopup.style.display = 'block';
-        }
-    });
-    // Обработчик для закрытия поп-апа
-    closePopupBtn.addEventListener('click', function() {
-        iodinePopup.style.display = 'none';
-    });
-    // Закрытие поп-апа по клику на фон (за его пределами)
-    window.addEventListener('click', function(e) {
-        if (e.target === iodinePopup) {
-            iodinePopup.style.display = 'none';
-        }
-    });
-    
-    // --- 8. ЗАПУСК СКРИПТА ---
-    initMap();
-    fetchWindData();
-    setInterval(fetchWindData, 5 * 60 * 1000); // Обновлять погоду каждые 5 минут
+    // --- 8. ЗАПУСК ПРИЛОЖЕНИЯ ---
+    initializeApp();
 });
