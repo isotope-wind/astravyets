@@ -15,9 +15,8 @@
         <p>Нажмите на кнопку, чтобы увидеть прогноз.</p>
     </div>
 
-    <!-- Область управления вынесена из потока для гибкости -->
     <div class="action-area">
-        <button id="simulateBtn" disabled>Загрузка данных о ветре...</button>
+        <button id="simulateBtn" disabled>Загрузка...</button>
     </div>
 
     <button id="panelToggleBtn">☰</button>
@@ -42,7 +41,7 @@
                 <p>Москва: <span id="timer-москва">-</span></p>
                 <p>Витебск: <span id="timer-витебск">-</span></p>
             </div>
-            <div class="actions-panel">
+            <div class="links-panel">
                 <h3>Что сейчас делать?</h3>
                 <ul>
                     <li><a href="https://t.me/lab66/573" target="_blank" rel="noopener noreferrer">Действия в случае радиационной аварии</a></li>
@@ -64,10 +63,10 @@
     </div>
     
     <footer>
-        <p><strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не точным прогнозом. Он создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках и для демонстрации того, как погодные условия могут влиять на распространение радиационного выброса. Все расчеты являются приблизительными.</p>
+        <p><strong>Внимание!</strong> Этот проект является упрощенной симуляцией, а не точным прогнозом. Создан радиационным химиком <a href="https://linktr.ee/steanlab" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> в рамках инициативы <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">LAB-66</a> для повышения осведомленности о потенциальных рисках.</p>
     </footer>
     
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
