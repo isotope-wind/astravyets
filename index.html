@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Куда подует ветер от БелАЭС? | Симулятор рисков</title>
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
@@ -17,15 +16,14 @@
         <p>Нажмите на кнопку, чтобы увидеть прогноз.</p>
     </div>
 
-    <!-- Основная кнопка, которая видна до начала симуляции -->
+    <!-- Кнопка для запуска симуляции -->
     <button id="simulateBtn">▶︎ Начать симуляцию</button>
 
-    <!-- Кнопка-гамбургер для вызова инфо-панели -->
+    <!-- Кнопка-гамбургер для вызова инфо-панели (видна только на мобильных) -->
     <button id="panelToggleBtn">☰</button>
 
-    <!-- ИНФОРМАЦИОННАЯ ПАНЕЛЬ -->
+    <!-- Информационная панель (на десктопе справа, на мобильных скрыта) -->
     <div class="info-panel" id="infoPanel">
-        <!-- Заголовок, который виден только на мобильных -->
         <div class="panel-header">
             <h2>Информация</h2>
             <span class="close-panel-btn" id="closePanelBtn">&times;</span>
