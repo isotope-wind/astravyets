@@ -1,98 +1,183 @@
-/* style.css (финальная версия) */
+/* style.css (отрефакторенная версия) */
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* === ОБЩИЕ СТИЛИ И СБРОСЫ === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    height: 100vh; overflow: hidden; -webkit-tap-highlight-color: transparent;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent; /* Убирает синюю подсветку при тапе на мобильных */
 }
-#map { height: 100%; width: 100%; z-index: 1; }
 
+#map {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    background-color: #aacbff; /* Фон на случай медленной загрузки тайлов */
+}
+
+/* === ЭЛЕМЕНТЫ НА КАРТЕ === */
 .main-title {
-    position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
-    z-index: 900; color: white; background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px 40px; text-align: center; border-radius: 10px;
-    text-shadow: 1px 1px 3px black; transition: opacity 0.5s ease-out;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 900;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px 40px;
+    text-align: center;
+    border-radius: 10px;
+    text-shadow: 1px 1px 3px black;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
 }
 .main-title h1 { font-size: 2.5em; margin-bottom: 10px; }
 .main-title p { font-size: 1.2em; max-width: 600px; }
-
 .npp-icon { font-size: 24px; text-shadow: 0 0 5px white; }
-
-/* === Область управления внизу === */
-#simulateBtn {
-    position: absolute; bottom: 80px; left: 50%;
-    transform: translateX(-50%); z-index: 950;
-    padding: 15px 30px; font-size: 1.2em; font-weight: bold;
-    color: white; background-color: #007bff; border: none;
-    border-radius: 50px; cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.2s ease;
+.leaflet-tooltip-permanent {
+    background-color: rgba(255, 255, 255, .95) !important;
+    border: 1px solid #c82333 !important;
+    border-radius: 4px;
+    color: #333 !important;
+    font-weight: 700;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .4);
+    padding: 6px 10px !important;
 }
-#simulateBtn:hover { background-color: #0056b3; transform: translateX(-50%) scale(1.05); }
+
+/* === ОБЛАСТЬ УПРАВЛЕНИЯ ВНИЗУ === */
+.action-area {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 950;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none; /* Позволяет кликать сквозь себя на карту */
+}
+#simulateBtn {
+    pointer-events: all; /* Делает саму кнопку кликабельной */
+    padding: 15px 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
+}
+#simulateBtn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+#simulateBtn:not(:disabled) {
+    background-color: #007bff;
+}
+#simulateBtn:not(:disabled):hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
 
 footer {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    background-color: rgba(0, 0, 0, 0.75); color: #f0f0f0;
-    padding: 10px 20px; text-align: center;
-    font-size: 0.8em; z-index: 900;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #f0f0f0;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 0.8em;
+    pointer-events: all; /* Делает футер кликабельным */
 }
 footer strong { color: #ffc107; }
-footer a { color: #82c0ff; }
+footer a { color: #82c0ff; text-decoration: underline; }
+footer a:hover { text-decoration: none; }
 
-/* === Панели === */
+
+/* === ИНФОРМАЦИОННАЯ ПАНЕЛЬ (СПРАВА / ВЫДВИЖНАЯ) === */
 #panelToggleBtn {
-    display: none; position: absolute; top: 20px; right: 20px; z-index: 1000;
-    width: 45px; height: 45px; font-size: 24px; color: #333;
-    background: rgba(255,255,255,0.9); border: 1px solid #ccc;
-    border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: none; /* По умолчанию скрыта */
+    position: absolute; top: 20px; right: 20px; z-index: 1000;
+    width: 45px; height: 45px; font-size: 24px;
+    color: #333; background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc; border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .info-panel {
-    position: absolute; top: 15px; right: 15px; width: 340px;
-    background-color: rgba(255, 255, 255, 0.95); border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 1000; display: flex; flex-direction: column;
+    position: absolute; top: 15px; right: 15px;
+    width: 340px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex; /* Скрывается через JS */
+    flex-direction: column;
     max-height: calc(100vh - 30px);
 }
-.panel-header { display: none; }
-.panel-content { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+
+.panel-header { display: none; /* Для мобильной версии */ }
+
+.panel-content {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 #windInfo { font-size: 1em; line-height: 1.2; }
 .arrow { display: inline-block; font-size: 22px; color: #007bff; margin-left: 10px; vertical-align: middle; }
+
 .info-panel h3 { font-size: 1.1em; margin-bottom: 3px; }
-#cityTimers p { margin: 3px 0; } #cityTimers span { font-weight: bold; }
-.actions-panel h3.subheader { font-size: 1em; color: #555; margin-top: 10px; }
-.actions-panel ul { list-style-type: none; margin-bottom: 5px; padding-left: 0; }
-.actions-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px; border-bottom: 1px solid #eee; }
-.actions-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
 
-.info-popup { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:350px; padding:25px; background:#fff; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,.3); z-index:2000; }
-.info-popup h4 { font-size:1.3em; margin-bottom:10px; }
-.close-btn { position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; color:#999; }
-.leaflet-tooltip-permanent { background-color:rgba(255,255,255,.95)!important; border:1px solid #c82333!important; border-radius:4px; color:#333!important; font-weight:700; box-shadow:0 1px 5px rgba(0,0,0,.4); padding:6px 10px!important; }
+#cityTimers p { margin: 3px 0; }
+#cityTimers span { font-weight: 700; }
 
+.links-panel h3.subheader { font-size: 1em; color: #555; margin-top: 10px; }
+.links-panel ul { list-style-type: none; margin-bottom: 5px; padding-left: 0; }
+.links-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px; border-bottom: 1px solid #eee; }
+.links-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
+
+/* === ПОП-АП С ИНФОРМАЦИЕЙ О ЙОДЕ === */
+.info-popup {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 90%; max-width: 350px; padding: 25px;
+    background: #fff; border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .3); z-index: 2000;
+}
+.info-popup h4 { font-size: 1.3em; margin-bottom: 10px; }
+.close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: #999; }
 
 /* === МОБИЛЬНАЯ АДАПТАЦИЯ === */
 @media (max-width: 768px) {
-    .main-title { width: 90%; top: 30%; padding: 15px; }
-    .main-title h1 { font-size: 1.8em; } .main-title p { font-size: 1em; }
-
-    #simulateBtn { width: calc(100% - 40px); bottom: 20px; /* Отодвинули от нижнего края */ }
-    footer { display: none; } /* Скрываем футер на мобильных для чистоты, вся инфо есть в панели */
+    .main-title { width: 90%; top: 35%; padding: 15px; }
+    .main-title h1 { font-size: 1.8em; }
+    .main-title p { font-size: 1em; }
     
+    .action-area { padding-bottom: 0; }
+    #simulateBtn { width: 100%; border-radius: 0; margin-bottom: 0; }
+    footer { border-top: 1px solid #0056b3; } /* Чтобы кнопка и футер не сливались */
+
     #panelToggleBtn { display: block; }
     
     .info-panel {
         top: 100%; right: 0; left: 0; bottom: auto; width: 100%;
         max-height: 85vh; border-radius: 15px 15px 0 0;
-        transform: translateY(0); transition: transform 0.3s ease-out;
-        z-index: 1100; box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+        transform: translateY(100%); transition: transform 0.3s ease-out;
+        z-index: 1100;
     }
-    .info-panel.hidden { transform: translateY(calc(100% - 60px)); /* Показываем только заголовок */ }
-    
+    .info-panel.visible { transform: translateY(0); }
     .panel-header {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 0 20px; cursor: pointer; height: 60px;
-        background: white; border-radius: 15px 15px 0 0; border-bottom: 1px solid #ddd;
+        display: flex; justify-content: center; align-items: center;
+        padding: 20px; cursor: pointer; border-bottom: 1px solid #ddd;
     }
-    .panel-header h2 { font-size: 1.3em; border: none; }
+    .panel-header h2 { border: none; font-size: 1.3em; }
 }
