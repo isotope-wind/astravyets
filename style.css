@@ -40,8 +40,23 @@ footer a:hover { text-decoration: none; }
 .links-panel ul { list-style-type: none; margin-bottom: 5px; padding-left: 0; }
 .links-panel li a { color: #0056b3; text-decoration: none; display: block; padding: 5px; border-bottom: 1px solid #eee; font-size: 0.9em; }
 .links-panel li a:hover { text-decoration: underline; background: #f0f0f0; }
-.leaflet-tooltip-permanent { background-color: rgba(255, 255, 255, .95) !important; border: 1px solid #0056b3 !important; color: #333 !important; font-weight: 700 !important; box-shadow: 0 1px 5px rgba(0, 0, 0, .4); padding: 6px 10px !important; text-align: center !important; font-size: 1em !important; border-radius: 4px; }
 .info-panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1099; }
+/* Бейдж «учебная симуляция» на карте */
+.sim-badge { position: absolute; top: 15px; left: 15px; z-index: 1000; background: rgba(0, 0, 0, 0.75); color: #ffc107; padding: 6px 12px; border-radius: 6px; font-size: 0.85em; font-weight: 600; pointer-events: none; }
+
+/* Сообщения о состоянии (ошибка, остановка симуляции) */
+#statusMessage { background-color: rgba(255, 193, 7, 0.95); color: #222; padding: 10px 20px; text-align: center; width: 100%; font-size: 0.9em; pointer-events: all; }
+
+#iodine-info-footer a { color: #fff; text-decoration: underline; }
+#iodine-info-footer a:hover { text-decoration: none; }
+
+.wind-caption { font-size: 0.8em; color: #555; text-align: center; margin-top: 12px; }
+.wind-caption a { color: #0056b3; }
+
+/* Блок пожертвований отделен от рекомендаций */
+.donate-block { margin-top: 20px; padding-top: 10px; border-top: 2px solid #ddd; }
+
+button:focus-visible, a:focus-visible { outline: 3px solid #ffc107; outline-offset: 2px; }
 @media (max-width: 768px) {
     .main-title { width: 90%; top: 35%; padding: 15px; }
     .main-title h1 { font-size: 1.6em; } .main-title p { font-size: 1em; }
@@ -49,6 +64,7 @@ footer a:hover { text-decoration: none; }
     #simulateBtn { width: 100%; border-radius: 0; margin-bottom: 0; }
     footer { border-top: 1px solid #004a99; }
     #panelToggleBtn { display: block; }
+    .sim-badge { top: 15px; left: 10px; max-width: calc(100% - 85px); }
     .info-panel { top: 100%; right: 0; left: 0; bottom: auto; width: 100%; max-height: var(--panel-height); border-radius: 15px 15px 0 0; transform: translateY(0); transition: transform 0.3s ease-out; }
     .info-panel.visible { transform: translateY(calc(-1 * var(--panel-height))); }
     .info-panel-overlay.visible { display: block; }

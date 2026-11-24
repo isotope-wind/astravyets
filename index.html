@@ -2,40 +2,43 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Куда дует ветер от БелАЭС? | Монитор рисков</title>
-    <!-- 1. Основные мета-теги для поисковиков -->
-    <meta name="description" content="Cимулятор, который в реальном времени показывает траектории распространения выброса с БелАЭС в зависимости от текущего направления ветра.">
-    <meta property="og:title" content="Куда дует ветер от БелАЭС? | Монитор рисков">
-    <meta property="og:description" content="Интерактивный симулятор, показывающий возможные траектории распространения выброса от БелАЭС.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Куда дует ветер от БелАЭС? | Учебная симуляция</title>
+    <!-- Основные мета-теги для поисковиков -->
+    <meta name="description" content="Учебный симулятор, который по текущему направлению ветра показывает, куда мог бы пойти выброс с БелАЭС. Это иллюстрация, а не прогноз.">
+    <meta property="og:title" content="Куда дует ветер от БелАЭС? | Учебная симуляция">
+    <meta property="og:description" content="Интерактивный учебный симулятор: как текущий ветер определяет направление возможного выброса от БелАЭС. Не прогноз.">
     <meta property="og:image" content="https://isotope-wind.github.io/astravyets/preview-image.jpg">
     <meta property="og:url" content="https://isotope-wind.github.io/astravyets/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Куда дует ветер от БелАЭС? | Монитор рисков">
-    <meta name="twitter:description" content="Cимулятор, показывающий траектории распространения выброса радиации от БелАЭС.">
+    <meta name="twitter:title" content="Куда дует ветер от БелАЭС? | Учебная симуляция">
+    <meta name="twitter:description" content="Учебный симулятор: как текущий ветер определяет направление возможного выброса от БелАЭС. Не прогноз.">
     <meta name="twitter:image" content="https://isotope-wind.github.io/astravyets/preview-image.jpg">
-    <!-- Ссылки на стили --> 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Ссылки на стили -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="map"></div>
+    <div class="sim-badge">Учебная симуляция, не прогноз</div>
     <div class="main-title" id="mainTitle">
         <h1>Коридор неопределенности</h1>
         <p>Нажмите, чтобы увидеть возможные траектории облака при текущем ветре.</p>
     </div>
 
     <div class="action-area">
+        <div id="statusMessage" role="status" style="display: none;"></div>
         <div id="iodine-info-footer" style="display: none;">
-            💡 <b>Подсказка:</b> Чем раньше принять йодид калия (125 мг), тем эффективнее защита. После 8 часов после прихода радиоактивного облака принимать йодиды бесполезно.
+            💡 <b>Подсказка:</b> йодид калия защищает щитовидную железу тем лучше, чем раньше он принят, а через много часов после прихода облака его польза резко падает. Принимать его нужно только по сообщению властей. Дозы зависят от возраста и состояния здоровья, см. <a href="https://www.who.int/publications/i/item/9789241550185" target="_blank" rel="noopener noreferrer">руководство ВОЗ</a>.
         </div>
         <button id="simulateBtn" disabled>Загрузка...</button>
         <footer>
-            <p><strong>Внимание!</strong> Этот проект — симуляция, а не точный прогноз. Модель не учитывает изменение ветра с высотой и расстоянием. Реальная траектория может отличаться. Создано радиационным химиком <a href="https://liberapay.com/steanlab/donate" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> для демонстрации того, как погодные условия влияют на распространение пятна выброса.</p>
+            <p><strong>Внимание!</strong> Это учебная симуляция, а не прогноз. Облако движется по прямой с постоянной скоростью приземного ветра на момент запуска. Модель не учитывает изменение ветра с высотой и со временем, рассеяние, осаждение и величину выброса. Реальная траектория может сильно отличаться. Создано радиационным химиком <a href="https://t.me/lab66" target="_blank" rel="noopener noreferrer">Сергеем Бесарабом</a> для демонстрации того, как погодные условия влияют на распространение пятна выброса. <a href="https://github.com/isotope-wind/astravyets" target="_blank" rel="noopener noreferrer">Методика и исходный код</a>.</p>
         </footer>
     </div>
-    
+
     <button id="panelToggleBtn" aria-label="Открыть панель информации">☰</button>
     <div class="info-panel-overlay" id="infoPanelOverlay"></div>
     <div class="info-panel" id="infoPanel">
@@ -43,12 +46,13 @@
         <div class="panel-content">
             <div class="wind-rose-widget">
                 <img src="wind-rose-base.svg" alt="Основа розы ветров" class="wind-rose-base">
-                <img src="wind-rose-pointer.svg" alt="Стрелка ветра" id="wind-pointer" class="wind-rose-pointer">
+                <img src="wind-rose-pointer.svg" alt="Стрелка показывает, куда дует ветер" id="wind-pointer" class="wind-rose-pointer">
                 <div id="wind-speed" class="wind-speed-display">--</div>
                 <small class="timestamp" id="update-time"></small>
             </div>
+            <p class="wind-caption">Стрелка показывает, куда дует ветер. Ветер на высоте 10 м у площадки АЭС (модель). Данные: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo.com</a></p>
             <div id="cityTimers" style="display: none;">
-                <h3>Время прибытия облака выброса (c момента запуска симуляции):</h3>
+                <h3>Время прибытия облака выброса (с момента запуска симуляции):</h3>
                 <div class="timers-grid"></div>
             </div>
             <div class="links-panel">
@@ -63,19 +67,19 @@
                     <li><a href="https://steanlab.medium.com/iodine-42a12a13e3d" target="_blank" rel="noopener noreferrer">Охотникам за йодом посвящается</a></li>
                     <li><a href="https://www.patreon.com/posts/50726105" target="_blank" rel="noopener noreferrer">Ветер и радиоактивные аэрозоли</a></li>
                 </ul>
-                 <h3 class="subheader">Поддержать развитие проекта</h3>
-                <ul>
-                    <li><a href="https://liberapay.com/steanlab/donate" target="_blank" rel="noopener noreferrer">Свободные пожертвования LiberaPay (MC/Visa/PayPal)</a></li>
-                    <li><a href="https://steanlab.medium.com/donations-for-lab66-steanlab-9e2bfb58b05d" target="_blank" rel="noopener noreferrer">Добровольные криптовалютные пожертвования</a></li>
-                </ul>
+                <div class="donate-block">
+                    <h3 class="subheader">Поддержать развитие проекта</h3>
+                    <ul>
+                        <li><a href="https://liberapay.com/steanlab/donate" target="_blank" rel="noopener noreferrer">Свободные пожертвования LiberaPay (MC/Visa/PayPal)</a></li>
+                        <li><a href="https://steanlab.medium.com/donations-for-lab66-steanlab-9e2bfb58b05d" target="_blank" rel="noopener noreferrer">Добровольные криптовалютные пожертвования</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div> 
-    
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js" defer></script>
 </body>
 </html>
-
-
-
